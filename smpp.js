@@ -5,7 +5,8 @@
  */
 var DT = Object.freeze({
     c_octet_string              : 0x01,
-    integer                     : 0x02
+    octet_string                : 0x02,
+    integer                     : 0x03,
 });
 
 var COMMANDS = Object.freeze({
@@ -62,8 +63,40 @@ var COMMANDS = Object.freeze({
             data_coding             : {name: "data_coding",             type: DT.integer,        max_len:   1},
             sm_default_msg_id       : {name: "sm_default_msg_id",       type: DT.integer,        max_len:   1},
             sm_length               : {name: "sm_length",               type: DT.integer,        max_len:   1},
-            short_message           : {name: "short_message",           type: DT.c_octet_string, max_len: 255}},
+            short_message           : {name: "short_message",           type: DT.octet_string,   max_len: 255}},
         desc  : ""},
+    submit_sm_resp: {
+	cmd : 0x80000004,
+        params: {
+            message_id              : {name: "message_id",              type: DT.c_octet_string, max_len: 65}},
+        desc : ""},	
+    delivery_sm : {
+        cmd : 0x00000005,
+        params: {
+            service_type            : {name: "service_type",            type: DT.c_octet_string, max_len:   6},
+            source_addr_ton         : {name: "source_addr_ton",         type: DT.integer,        max_len:   1},
+            source_addr_npi         : {name: "source_addr_npi",         type: DT.integer,        max_len:   1},
+            source_addr             : {name: "source_addr",             type: DT.c_octet_string, max_len:  21},
+            dest_addr_ton           : {name: "dest_addr_ton",           type: DT.integer,        max_len:   1},
+            dest_addr_npi           : {name: "dest_addr_npi",           type: DT.integer,        max_len:   1},
+            dest_addr               : {name: "dest_addr",               type: DT.c_octet_string, max_len:  21},
+            esm_class               : {name: "esm_class",               type: DT.integer,        max_len:   1},
+            protocol_id             : {name: "protocol_id",             type: DT.integer,        max_len:   1},
+            priority_flag           : {name: "priority_flag",           type: DT.integer,        max_len:   1},
+            schedule_delivery_time  : {name: "schedule_delivery_time",  type: DT.c_octet_string, max_len:  17},
+            validity_period         : {name: "validity_period",         type: DT.c_octet_string, max_len:  17},
+            registered_delivery     : {name: "registered_delivery",     type: DT.integer,        max_len:   1},
+            replace_if_present_flag : {name: "replace_if_present_flag", type: DT.integer,        max_len:   1},
+            data_coding             : {name: "data_coding",             type: DT.integer,        max_len:   1},
+            sm_default_msg_id       : {name: "sm_default_msg_id",       type: DT.integer,        max_len:   1},
+            sm_length               : {name: "sm_length",               type: DT.integer,        max_len:   1},
+            short_message           : {name: "short_message",           type: DT.octet_string,   max_len: 255}},
+        desc  : ""},
+    delivery_sm_resp: {
+	cmd : 0x80000005,
+        params: {
+            message_id              : {name: "message_id",              type: DT.c_octet_string, max_len: 65}},
+        desc : ""},	
     enquire_link : {
         cmd : 0x00000015,
         params: {},
@@ -93,7 +126,7 @@ var STATUS = Object.freeze({
     "ESME_RINVNUMDESTS"         : {value: 0x00000033, desc: "Invalid number of destinations. The number_of_dests field in the submit_multi PDU is invalid."},
     "ESME_RINVDLNAME"           : {value: 0x00000034, desc: "Invalid Distribution List name. The dl_name field specified in the submit_multi PDU is either invalid, or non-existent."},
     "ESME_RINVDESTFLAG"         : {value: 0x00000040, desc: "Destination flag is invalid (submit_multi). The dest_flag field in the submit_multi PDU has been encoded with an invalid setting."},
-    "ESME_RINVSUBREP"           : {value: 0x00000042, desc: "Submit w/replace functionality has been requested where it is either unsupported or inappropriate for the particular MC. This can typically occur with submit_multi where the context of ‚Äúreplace if present‚Äù is often a best effort operation and MCs may not support the feature in submit_multi. Another reason for returning this error would be where the feature has been denied to an ESME."},
+    "ESME_RINVSUBREP"           : {value: 0x00000042, desc: "Submit w/replace functionality has been requested where it is either unsupported or inappropriate for the particular MC. This can typically occur with submit_multi where the context of ìreplace if presentî is often a best effort operation and MCs may not support the feature in submit_multi. Another reason for returning this error would be where the feature has been denied to an ESME."},
     "ESME_RINVESMCLASS"         : {value: 0x00000043, desc: "Invalid esm_class field data. The esm_class field has an unsupported setting."},
     "ESME_RCNTSUBDL"            : {value: 0x00000044, desc: "Cannot Submit to Distribution List.Distribution lists are not supported, are denied or unavailable."},
     "ESME_RSUBMITFAIL"          : {value: 0x00000045, desc: "submit_sm, data_sm or submit_multi failed. Generic failure error for submission operations."},
@@ -112,7 +145,7 @@ var STATUS = Object.freeze({
     "ESME_RX_P_APPN"            : {value: 0x00000065, desc: "ESME Receiver Permanent App Error Code. Rx or Trx ESME is unable to process a delivery due to a permanent problem relating to the given destination address and is requesting that the message and all other messages queued to the same destination should NOT be retried any further."},
     "ESME_RX_R_APPN"            : {value: 0x00000066, desc: "ESME Receiver Reject Message Error Code. Rx or Trx ESME is unable to process a delivery due to a problem relating to the given message and is requesting that the message is rejected and not retried. This does not affect other messages queued for the same ESME or destination address."},
     "ESME_RQUERYFAIL"           : {value: 0x00000067, desc: "query_sm request failed. Generic failure scenario for a query request."},
-    "ESME_RINVTLVSTREAM"        : {value: 0x000000C0, desc: "Error in the optional part of the PDU Body. Decoding of TLVs (Optional Parameters) has resulted in one of the following scenarios: ‚Ä¢ PDU decoding completed with 1- 3 octets of data remaining, indicating a corrupt PDU. ‚Ä¢ A TLV indicated a length that was not present in the remaining PDU data (e.g. a TLV specifying a length of 10 where only 6 octets of PDU data remain)."},
+    "ESME_RINVTLVSTREAM"        : {value: 0x000000C0, desc: "Error in the optional part of the PDU Body. Decoding of TLVs (Optional Parameters) has resulted in one of the following scenarios: ï PDU decoding completed with 1- 3 octets of data remaining, indicating a corrupt PDU. ï A TLV indicated a length that was not present in the remaining PDU data (e.g. a TLV specifying a length of 10 where only 6 octets of PDU data remain)."},
     "ESME_RTLVNOTALLWD"         : {value: 0x000000C1, desc: "TLV not allowed. A TLV has been used in an invalid context, either inappropriate or deliberately rejected by the operator."},
     "ESME_RINVTLVLEN"           : {value: 0x000000C2, desc: "Invalid Parameter Length. A TLV has specified a length that is considered invalid."},
     "ESME_RMISSINGTLV"          : {value: 0x000000C3, desc: "Expected TLV missing. A mandatory TLV such as the message_payload TLV within a data_sm PDU is missing."},
@@ -208,13 +241,21 @@ SMPP.prototype.parseField = function(body, param)
             field_value_hex = this.cutHexStr(body.substring(this.offset));
             params[param.name] = this.hex2a(field_value_hex);
             if (field_value_hex.length < (2 * param.max_len))
-                this.offset += field_value_hex.length;
+                this.offset += field_value_hex.length + 2; // Including '00'
             else
-                this.offset += param.max_len;
+                this.offset += param.max_len + 2; // Including '00'
             break;
         case DT.integer:
             params[param.name] = parseInt(body.substring(this.offset, this.offset+2), 16);
             this.offset += 2 * param.max_len;
+            break;
+        case DT.octet_string:
+            field_value_hex = body.substring(this.offset, 2 * param.max_len); // TODO: Need to set length based on previous _length field
+            params[param.name] = this.hex2a(field_value_hex);
+            if (field_value_hex.length < (2 * param.max_len))
+                this.offset += field_value_hex.length;
+            else
+                this.offset += param.max_len;
             break;
     }
 }
@@ -257,13 +298,49 @@ SMPP.prototype.compileBody = function(command_id)
     for (var cmd_name in COMMANDS) {
         if (COMMANDS[cmd_name].cmd == command_id) {
             var params = COMMANDS[cmd_name].params;
-            for (var param in  params) {
-                str += this.hexStrStr(this.body.params[param]);
+            for (var param in params) {
+                switch (params[param].type) {
+		    case DT.c_octet_string:
+                        str += this.hexStrStr(this.body.params[param]);
+			break;
+		    case DT.integer:
+                        str += this.hexStr8(this.body.params[param]);
+			break;
+		    case DT.octet_string:
+                        var tmp_str = this.hexStrStr(this.body.params[param]);
+			str += tmp_str.substring(0, tmp_str.length - 2); // Removing the added '00' at the end
+			break;
+		}
             }
             return str;
         }
     }
     return this.body;
+}
+
+/******************************************************************************
+ * Routine to encode JSON format into hex stream
+ ******************************************************************************/
+SMPP.prototype.toHexStream = function(json)
+{
+    this.hdr = {
+        command_length: json.hdr.command_length,
+        command_id: json.hdr.command_id,
+        command_status: json.hdr.command_status,
+        sequence_number: json.hdr.sequence_number
+    };
+
+    if (!this.hasOwnProperty("body"))
+        this.body = {};
+
+    if (!this.body.hasOwnProperty("params"))
+        this.body.params = {};
+
+    var params = json.body.params;
+    for (var param in params) {
+	this.body.params[param] = params[param];
+    }
+    return this.toHexStr();
 }
 
 /******************************************************************************
@@ -291,30 +368,37 @@ SMPP.prototype.hexStrStr = function(str)
 
 SMPP.prototype.hex2a = function(str)
 {
-    return str.replace(/00/,"")
-              .match(/.{1,2}/g)
-              .map(function(v)
-              	{
-                	if (parseInt(v, 16) != 0)
-				return String.fromCharCode(parseInt(v, 16));
-                })
-              .join('');
+    var str1 = str.replace(/00/,"");
+    if (str1.length != 0)    	
+        return str1.match(/.{1,2}/g)
+                   .map(function(v)
+                        {
+                        if (parseInt(v, 16) != 0)
+			    return String.fromCharCode(parseInt(v, 16));
+                        })
+                   .join('');
+    else
+	return str1;
 }
 
 SMPP.prototype.hex2ucs = function(str)
 {
-    return str.replace(/\s/g,'')
-              .match(/.{1,4}/g)
-              .map(function(v)
-                      {
-                          return String.fromCharCode(parseInt(v, 16));
-                      })
-              .join('');
+    var str1 = str.replace(/\s/g,'');
+    if (str1.length != 0)    	
+        return str1.match(/.{1,4}/g)
+                   .map(function(v)
+                        {
+                        return String.fromCharCode(parseInt(v, 16));
+			})
+                   .join('');
 }
 
 SMPP.prototype.cutHexStr = function(str)
 {
-    return str.match(/[0-9A-Fa-f]+?00/)[0];
+    var val = str.match(/^(.*?)00/)[1];
+    if (val.length % 2)
+        val += "0"; // For cases like '012000'
+    return val;
 }
 /*****************************************************************************/
 
