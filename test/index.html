@@ -1,0 +1,27 @@
+<html>
+<head>
+<script src="test.js"></script>
+<script>
+
+var obj1 = {
+    a : 1,
+    b : { c : 3, d : 4},
+    e : 5
+};
+
+var obj2 = {
+    b : { c : 9, d : 9},
+    e : 5,
+    f : 8
+};
+
+var exclude_list = ["d"];
+
+console.log("-------------------------------");
+console.log(compare(obj1, obj2, exclude_list));
+console.log("-------------------------------");
+
+</script>
+</head>
+<body></body>
+</html>

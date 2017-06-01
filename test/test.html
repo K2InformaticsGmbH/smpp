@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>SMPP Tester</title>
+	<script src="../smpp.js"></script>
+	<script>
+		function encode() {
+			var json = JSON.parse(JSON.stringify(document.getElementById("json").value));
+			if (json == "")
+				hex_str = "";
+			else {
+				json = JSON.parse(json);
+				var pdu = new SMPP();
+				hex_str = pdu.toHexStream(json);
+			}
+			document.getElementById("hex").value = hex_str;
+		};
+
+		function decode() {
+			var hex = document.getElementById("hex").value.replace(/\s/g, '');
+			if (hex == "")
+				document.getElementById("json").value = "";
+			else {
+				var pdu = new SMPP();
+				pdu.fromHexStr(hex);
+				document.getElementById("json").value = JSON.stringify(pdu, null, 4);
+			}
+		};
+	</script>
+</head>
+<body>
+	<table cellspacing="0" cellpadding="0" width="100%">
+		<tr>
+			<td width="45%">
+				<h1>Hex String</h1>
+				<textarea id="hex" rows="10" style="width:98%;"></textarea>
+			</td>
+			<td align="center">
+				<input type="button" value="Decode >>" onclick="decode()"/>
+				<br />
+				<br />
+				<input type="button" value="<< Encode" onclick="encode()"/>
+			</td>
+			<td width="45%">
+				<h1>JSON</h1>
+				<textarea id="json" rows="10" style="width:98%;"></textarea>
+			</td>
+		</tr>
+	</table>
+</body>
+</html>
