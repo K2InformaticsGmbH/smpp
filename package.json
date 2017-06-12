@@ -1,6 +1,6 @@
 {
   "name": "smpp",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "SMPP parser",
   "main": "smpp.js",
   "directories": {
@@ -11,7 +11,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@bitbucket.org/janmenjoyroy/smpp.js.git"
+    "url": "git+https://github.com/K2InformaticsGmbH/smppjs.git"
   },
   "keywords": [
     "SMPP",
@@ -21,5 +21,5 @@
   ],
   "author": "JanmenjoyRoy <janmenjoyroy@yahoo.co.in>",
   "license": "ISC",
-  "homepage": "https://bitbucket.org/janmenjoyroy/smpp.js#readme"
+  "homepage": "https://github.com/K2InformaticsGmbH/smppjs#smpp"
 }
