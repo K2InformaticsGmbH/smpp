@@ -1,5 +1,5 @@
 {
-  "name": "smpp",
+  "name": "smppjs",
   "version": "0.0.1",
   "description": "SMPP parser",
   "main": "smpp.js",
@@ -15,7 +15,6 @@
   },
   "keywords": [
     "SMPP",
-    "UCP",
     "message",
     "parser"
   ],
